@@ -1,0 +1,196 @@
+<section>
+    <h1>Section 4: Reorganizing Code</h1>
+    <blockquote>Functions should do one thing. They should do it well. They should do it only.</blockquote>
+</section>
+<section data-fullscreen>
+    <h1>Agressively Identify and extract unrelated subproblems</h1>
+    <ol>
+        <li>Look at a given function or block of code, and ask yourself, “What is the high-level goal of this code?”</li>
+        <li>For each line of code, ask, “Is it working directly to that goal? Or is it solving an unrelated subproblem needed
+            to meet it?”</li>
+        <li>If enough lines are solving an unrelated subproblem, extract that code into a separate function.</li>
+    </ol>
+</section>
+<section data-fullscreen class="full">
+    <h1>Example</h1>
+    <pre><code data-noescape class="php smaller">
+// Return which element of 'array' is closest to the given latitude/longitude.
+var findClosestLocation = function(lat, lng, array) {
+    var closest;
+    var closest_dist = Number.MAX_VALUE;
+    for (var i = 0; i < array.length; i + = 1) {
+        // Convert both points to radians. 
+        var lat_rad = radians(lat);
+        var lng_rad = radians(lng);
+        var lat2_rad = radians(array[i].latitude);
+        var lng2_rad = radians(array[i].longitude);
+
+        // Use the "Spherical Law of Cosines" formula. 
+        var dist = Math.acos(Math.sin(lat_rad) * Math.sin(lat2_rad) + Math.cos(lat_rad) * Math.cos(lat2_rad) * Math.cos(lng2_rad - lng_rad));
+        if (dist < closest_dist) {
+            closest = array[i];
+            closest_dist = dist;
+        }
+    }
+    return closest;
+};
+</code></pre>
+    <div class="fragment">Most of the code inside the loop is working on an unrelated subproblem: Compute the spherical distance between two lat/long
+        points. Let's extract that.</div>
+</section>
+
+<section data-fullscreen class="full">
+    <h1>Better</h1>
+    <pre><code data-noescape class="php smaller">
+// Return which element of 'array' is closest to the given latitude/longitude.
+var findClosestLocation = function(lat, lng, array) {
+    var closest;
+    var closest_dist = Number.MAX_VALUE;
+    for (var i = 0; i < array.length; i += 1) {
+        var dist = calculateSphericalDistance(lat, lng, array[i].latitude, array[i].longitude);
+        if (dist < closest_dist) {
+            closest = array[i];
+            closest_dist = dist;
+        }
+    }
+    return closest;
+};
+
+function calculateSphericalDistance(lat1, lng1, lat2, lng2) {
+    var lat_rad = radians(lat1);
+    var lng_rad = radians(lng2);
+    var lat2_rad = radians(lat2);
+    var lng2_rad = radians(lng2);
+
+    // Use the "Spherical Law of Cosines" formula. 
+    return Math.acos(Math.sin(lat_rad) * Math.sin(lat2_rad) + Math.cos(lat_rad) * Math.cos(lat2_rad) * Math.cos(lng2_rad - lng_rad));
+}
+</code></pre>
+</section>
+<section>
+    <h1>Functions should be small</h1>
+    <blockquote>"The first rule of functions is that they should be small. The second rule of functions is that they should be smaller
+        than that." -Robert Martin</blockquote>
+</section>
+<section>
+    <h1>What is "one thing"?</h1>
+    <p>Can you extract another function from it with a name that is not merely a restatement of its implementation?</p>
+</section>
+<section>
+    <h1>One level of abstraction</h1>
+    <p>Keep all statements in a function at the same level of abstraction. Readers won't be able to tell if a line is an essential
+        concept or a minor detail.</p>
+</section>
+<section>
+    <h1>Limit function arguments</h1>
+    <p>The ideal number of arguments for a function is zero. Next comes one and two. Three+ arguments should be avoided it at
+        all possible.</p>
+</section>
+<section>
+    <h1>Don't use "flag" arguments</h1>
+    <pre><code data-noescape class="php smaller">
+function renderPage($isTestSuite = false) {
+    // render the page, but render it differently if this is run from a test suite
+}
+</code></pre>
+    <p>Passing a boolean into a function loudly proclaims "THIS FUNCTION DOES MORE THAN ONE THING".</p>
+    <p>We should split the function into two: renderForTestSuite() and renderPage()</p>
+</section>
+<section>
+    <h1>Eliminate side effects</h1>
+    <p>Side effects are lies. Your function promises to do one thing, but it also does other hidden things.</p>
+</section>
+<section data-fullscreen class="full">
+    <pre><code data-noescape class="php smaller">
+class UserValidator
+{
+    public function checkPassword($userName, $password)
+    {
+        $user = UserRepository::findByUsername($userName);
+        if ($user) {
+            $codedPhrase = $user->getPhraseEncodedByPassword();
+            $phrase = Crypto::decrypt($codedPhrase, $password);
+            if ($phrase === 'Valid password') {
+                Session::initialize();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+</code></pre>
+    <div class="fragment">
+        <h1>Lies.</h1>
+        <p>The function "secretly" initializes a session.</p>
+        <p>Now we have a temporal coupling problem - we can only call "checkPassword" at certain times or risk wiping the session.</p>
+    </div>
+</section>
+<section>
+    <h1>Avoid output arguments</h1>
+    <p>Arguments are most naturally seen as INPUTS to a function.</p>
+    <pre><code data-noescape class="php smaller">
+// What's this do?
+appendFooter($string);
+            </code></pre>
+    <ul>
+        <li>Append $string as the footer to something?</li>
+        <li>Append some footer to $string?</li>
+        <li>Is $string an input or an output?</li>
+    </ul>
+</section>
+<section>
+    <h2>Command/Query Separation</h2>
+    <p>Functions should either do something or answer something, but not both.</p>
+    <pre><code data-noescape class="php smaller">// returns boolean
+public function set($attribute, $value) { /* ... */}
+
+// call it like this
+if(set('username', 'steven')) {
+    // ...
+} </code></pre>
+    <p>What does it mean? Is it asking if username was previously set to "steven"? Or is it asking whether the username attribute
+        was successfully set to "steven"?</p>
+</section>
+<section>
+    <h1>Extract try/catch blocks</h1>
+    <pre><code data-noescape class="php smaller">// returns boolean
+public function delete(Page $page) {
+    try {
+        deletePageAndAllReferences($page);
+    } catch (Exception $e) {
+        logError($e);
+    }
+}
+
+protected function deletePageAndAllReferences(Page $page) { /* ... */ }
+protected function logError(Exception $e) { /* ... */ }
+</code></pre>
+    <p>Functions should do one thing. Error handling is "one thing" and should live on its own.</p>
+</section>
+<section>
+    <h1>Dont Repeat Yourself (DRY)</h1>
+    <p>Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.</p>
+</section>
+<section>
+    <h1>Conclusion</h1>
+    <h3>How to write code like this?</h3>
+    <p>It's just like writing a book - get your thoughts down "on paper", then massage it until it reads well.</p>
+</section>
+<section>
+    <p>When I code, I write long and complicated functions that have bad names, duplicate code, nested loops and long argument
+        lists. I make sure the code works, and often write unit tests. Finally, I massage and refine the code, splitting
+        out functions, changing names, removing duplication. I shrink methods and reorder them. Sometimes, I break out whole
+        new classes, all while keeping the tests passing.</p>
+    <p>In the end, I wind up with functions that read well and generally follow the "rules" we discussed.</p>
+</section>
+<section>
+    <h1>Thank you!</h1>
+    <p>Recommended reading:</p>
+    <ul>
+        <li>"Clean Code" by Robert Martin</li>
+        <li>"Refactoring: Improving the Design of Existing Code" by Martin Fowler</li>
+        <li>"Code Complete" by Steve McConnell</li>
+    </ul>
+</section>

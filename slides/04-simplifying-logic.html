@@ -1,0 +1,152 @@
+<section>
+    <h1>Section 3: Simplifying Logic</h1>
+</section>
+<section>
+    <h1>Don't make them think</h1>
+    <h4>Make all your conditionals, loops, and other changes to control flow as “natural” as possible — written in a way that doesn’t make the reader stop and reread your code.</h4>
+</section>
+<section>
+    <h1>Order of conditions</h1>
+    <p>Which is easier to read?</p>
+            <pre><code data-noescape class="php smaller">
+if ($length >= 10)
+
+or
+
+if (10 <= $length)
+</code></pre>
+</section>
+<section>
+    <h1>Order of conditions</h1>
+    <p>What about these?</p>
+            <pre><code data-noescape class="php smaller">
+while ($bytesReceived < $bytesExpected) 
+
+or 
+
+while ($bytesExpected > $bytesReceived)
+</code></pre>
+</section>
+<section>
+    <h1>Rule of thumb</h1>
+    <blockquote>Left side should be the expression “being interrogated,” whose value is more in flux.</blockquote>
+</section>
+<section>
+    <h1>If/else Ordering</h1>
+                <pre><code data-noescape class="php smaller">
+if($a === $b) {
+    // case one
+} else {
+    // case two
+}
+</code></pre>
+<p>versus</p>
+                <pre><code data-noescape class="php smaller">
+if($a !== $b) {
+    // case one
+} else {
+    // case two
+}
+</code></pre>
+</section>
+
+<section>
+    <h1>If/else Ordering</h1>
+    <ul>
+        <li>Prefer detailing with the positive case first (if $debug vs. if !$debug)</li>
+<li>Prefer handling the simpler case first.</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Return early</h1>
+    <p>Handle the obvious and simple cases right away.</p>
+                    <pre><code data-noescape class="php smaller">
+public function contains($string, $subString) {
+    if($string === null || $subString === null) return false;
+    if($subString === '') return false;
+
+    // real work here without worrying about anything handled 
+    // by the above "guard clauses"
+}
+</code></pre>
+</section>
+
+<section>
+    <h1>Minimize Nesting</h1>
+    <p>Deeply nested code is hard to understand. Each level of nesting pushes an extra condition onto the reader’s “mental stack.”</p>
+                        <pre><code data-noescape class="php smaller">
+if ($userResult == SUCCESS) {
+    if ($permissionResult != SUCCESS) {
+        $reply.writeErrors("error reading permissions");
+        $reply.done();
+        return; 
+    } 
+    $reply.writeErrors(""); 
+} else {
+    $reply.writeErrors($userResult);
+} 
+$reply.done();
+</code></pre>
+<p class="fragment">Overall, you have to keep the values of $userResult and $permissionResult in your head at all times.</p>
+</section>
+
+<section>
+    <h1>Remove nesting by returning early</h1>
+<pre><code data-noescape class="php smaller">
+if ($userResult != SUCCESS) {
+    $reply.WriteErrors($userResult);
+    $reply.done();
+    return;
+}
+
+if ($permissionResult != SUCCESS) {
+    $reply.WriteErrors("error reading permissions");
+    $reply.Done();
+    return;
+}
+
+$reply.WriteErrors("");
+$reply.Done();
+</code></pre>
+</section>
+
+<section>
+    <h1>Break down giant expressions</h1>
+    <blockquote>Recent research suggests that most of us can only think about three or four “things” at a time.</blockquote>
+</section>
+
+<section>
+    <h1>Use Explaining Variables</h1>
+    <p>Introduce an extra variable that captures a smaller subexpression.</p>
+    <pre><code data-noescape class="php smaller">
+if(trim($line.explode(':'[0])) === 'root') { /*...*/}
+
+vs.
+
+$userName = trim($line.explode(':'[0]));
+if($userName === 'root') { /*...*/}
+</code></pre>
+</section>
+
+<section data-fullscreen>
+    <h1>Use Summary Variables</h1>
+        <pre><code data-noescape class="php smaller">
+if($request->user->id === $document->owner_id) {
+    // user can edit this document
+}
+if($request->user->id !== $document->owner_id) {
+    // document is ready only
+}
+</code></pre>
+<p>The main concept in this code is, “Does the user own the document?” That concept can be stated more clearly by adding a summary variable</p>
+        <pre class="fragment"><code data-noescape class="php smaller">
+$userOwnsDocument = ($request->user->id === $document->owner_id);
+if(userOwnsDocument) {
+    // user can edit this document
+}
+if(!userOwnsDocument) {
+    // document is ready only
+}
+</code></pre>
+</section>
