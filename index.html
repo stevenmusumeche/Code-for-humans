@@ -9,7 +9,7 @@
 
 	<link rel="stylesheet" href="css/reveal.css">
 	<link rel="stylesheet" href="css/theme/black.css">
-	<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+	<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
 	<!-- Theme used for syntax highlighting of code -->
 	<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -60,7 +60,7 @@
 				{ src: 'plugin/markdown/markdown.js' },
 				{ src: 'plugin/notes/notes.js', async: true },
 				{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
-				{ src: 'node_modules/reveal_external/external/external.js', condition: function () { return !!document.querySelector('[data-external]'); } },
+				{ src: 'plugin/external/external.js', condition: function () { return !!document.querySelector('[data-external]'); } },
 				{ src: 'plugin/fullscreen/fullscreen.js' },
 			]
 		});
