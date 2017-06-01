@@ -1,11 +1,10 @@
 <section>
     <h1>Section 2: Surface-Level Improvements</h1>
     <div class="fragment">
-        <h4>(Just because it's surface-level doesn't mean it's not important)</h4>
-        <ul>
-            <li class="fragment">Affects every line of code</li>
-            <li class="fragment">Each change is small, but in aggregate they can create a huge improvement</li>
-        </ul>
+        <aside class="notes" data-markdown>
+            * Just because it's surface-level doesn't mean it's not important * Affects every line of code * Each change is small, but
+            in aggregate they can create a huge improvement
+        </aside>
     </div>
 </section>
 <section>
@@ -20,8 +19,11 @@
 </section>
 <section>
     <h1>Aesthetics vs. Design</h1>
-    <p>This section is only concerned with simple "aesthetic" improvements. There are times when larger refactoring can help
-        even more, which we will discuss later. Ideally, you should strive for BOTH good design and aesthetics.
+    <p>This section is only concerned with simple "aesthetic" improvements. </p>
+    <aside class="notes" data-markdown>
+        * There are times when larger refactoring can help even more, which we will discuss later. Ideally, you should strive for
+        BOTH good design and aesthetics.
+    </aside>
 </section>
 <section class="full" data-fullscreen>
     <h1>Use a consistent layout</h1>
@@ -32,19 +34,19 @@ protected $apiKey;
 
     public function __construct($apiKey,
             Client $client) {
-        $this->apiKey = $apiKey; $this->client = $client;
+    $this->apiKey = $apiKey; $this->client = $client;
     }
 
  public function getHolidays()
     {
     $items = $this->fetchHolidays();
      $holidays = array_map(function ($item) {
-       $holiday = new \stdClass();
+ $holiday = new \stdClass();
           $holiday->name = $item->summary;
          $holiday->date = $item->start->date;
             return $holiday; }, $items);
 
-        return $holidays;
+    return $holidays;
 }
 
 protected function fetchHolidays (){
@@ -54,11 +56,10 @@ protected function fetchHolidays (){
 }
 }
 </code></pre>
-    <img src="https://media.giphy.com/media/10dHotK4K8R0AM/giphy.gif" class="fragment" style="position: fixed;right: 20px;bottom: 20px; width: 40%;"
+    <img src="https://media.giphy.com/media/10dHotK4K8R0AM/giphy.gif" class="fragment" style="position: absolute;right: 20px;bottom: 20px; width: 40%;"
     />
 </section>
 <section class="full" data-fullscreen>
-    <h1>Use a consistent layout</h1>
     <pre><code data-noescape class="php smaller">
 class GoogleCalendar
 {
@@ -96,7 +97,7 @@ class GoogleCalendar
 
 }
 </code></pre>
-    <img src="https://media.giphy.com/media/rxFT9dyE7u3D2/giphy.gif" class="fragment" style="position: fixed;right: 20px;bottom: 150px; width: 40%;"
+    <img src="https://media.giphy.com/media/rxFT9dyE7u3D2/giphy.gif" class="fragment" style="position: absolute;right: 20px;bottom: 150px; width: 40%;"
         data-fragment-index="1" />
     <h3 class="fragment" data-fragment-index="1">It's easier to work with code that’s aesthetically pleasing</h3>
 </section>
@@ -128,7 +129,9 @@ function suggestNewFriends($user, $emailPassword) {
     return render('suggested_friends.html', $display);
 }
             </code></pre>
-            <p class="fragment">It's not immediately obvious that this code goes through a set of distinct steps</p>
+            <aside class="notes" data-markdown>
+                * It's not immediately obvious that this code goes through a set of distinct steps
+            </aside>
         </div>
         <div style="flex-basis: 100%">
             <pre class="fragment"><code data-noescape class="php smaller">
@@ -160,7 +163,6 @@ function suggestNewFriends($user, $emailPassword) {
     return render('suggested_friends.html', $display);
 }
             </code></pre>
-            <p class="fragment">Related lines are grouped into blocks</p>
         </div>
     </div>
 
@@ -177,7 +179,7 @@ function suggestNewFriends($user, $emailPassword) {
 </section>
 <section>
     <h1>Purpose</h1>
-    <h4>The purpose of commenting is to help the reader know as much as the writer did</h4>
+    <p>The purpose of commenting is to help the reader know as much as the writer did</p>
 </section>
 <section>
     <h1>Put yourself in the reader's shoes</h1>
@@ -204,9 +206,9 @@ function suggestNewFriends($user, $emailPassword) {
 </section>
 <section>
     <h1>Big Picture Comments</h1>
-    <p>Someone new just joined your team, she’s sitting next to you, and you need to get her familiar with the codebase in 5
+    <aside class="notes">Someone new just joined your team, she’s sitting next to you, and you need to get her familiar with the codebase in 5
         minutes.
-    </p>
+    </aside>
 </section>
 <section>
     <h1>Big Picture Comments</h1>
@@ -220,16 +222,16 @@ function suggestNewFriends($user, $emailPassword) {
 <section class="full" data-fullscreen>
     <h1>Summary Comments</h1>
     <h3>What's this do?</h3>
-    <pre><code data-noescape class="php">
+    <pre><code data-noescape class="php smaller">
 $keys = array_keys(array_merge(array_flip($visitor->getVisible()), $this->camelize(array_flip($visitor->getVisible()))));
 $visitor = $this->visitorRepository->updateOrCreate($visitor->id, $request->onlyIfExists($keys));
         </code></pre>
-    <div class="fragment fade-in" style="position: absolute; width: 500px; bottom: 0; left: calc(50% - 250px);">
+    <div class="fragment fade-in" style="position: absolute; width: 500px; bottom: -50px; left: calc(50% - 250px);">
         <img class="fragment fade-out" style="width:500px;" src="https://media.giphy.com/media/bPTXcJiIzzWz6/giphy.gif" />
     </div>
     <div class="fragment" style="margin-top: 80px">
         <h3>How about now?</h3>
-        <pre><code data-noescape class="php">
+        <pre><code data-noescape class="php smaller">
 // We allow the visitor to update only a limited number of fields. We retrieve that list from the Visitor object
 // through getVisible(). They will be in snake_case. We want to allow camelCase as well. Here we do a bunch of
 // array manipulation just so we end up with a list of field names in both camelCase and snake_case.
@@ -239,20 +241,19 @@ $visitor = $this->visitorRepository->updateOrCreate($visitor->id, $request->only
     </div>
 </section>
 <section data-fullscreen>
+
     <h1>"Director Commentary"</h1>
-    <p class="fadeout">Movies often have a “director commentary” track where the filmmakers give their insights and tell stories to help you
-        understand how the film was made.</p>
     <h4 class="fragment" data-fragment-index="1">Example</h4>
     <blockquote class="fragment" data-fragment-index="1">"Surprisingly, this method of calculating the results was faster than the complicated SQL query that would be required
         to get the data in a single database query."</blockquote>
+    <aside class="notes">Movies often have a “director commentary” track where the filmmakers give their insights and tell stories to help you
+        understand how the film was made.</aside>
 </section>
 <section>
     <h1>What not to comment</h1>
 </section>
 <section class="full" data-fullscreen>
     <h1>Worthless comments</h1>
-    <p>Reading a comment takes time away from reading the actual code, and each comment takes up space on the screen. It better
-        be worth it.</p>
     <pre><code data-noescape class="php smaller">
 class Foo {
     const NUM_PAGES = 5; // number of pages
@@ -274,18 +275,19 @@ class Foo {
     }
 }
         </code></pre>
-
+    <aside class="notes">Reading a comment takes time away from reading the actual code, and each comment takes up space on the screen. It better
+        be worth it.</aside>
 </section>
 <section>
     <h4>Don’t comment on facts that can be derived quickly from the code itself.</h4>
-    <pre><code data-noescape class="php smaller">
+    <pre><code data-noescape class="php">
 // get the percentage from a decimal value
 $percentage = $decimalVal * 100;
             </code></pre>
     <div class="fragment">
         <h4>"Quickly" is an important distinction</h4>
 
-        <pre><code data-noescape class="php smaller">
+        <pre><code data-noescape class="php">
 // remove everything after the second '*'
 $name = '*'. implode( explode('*', $line)[2]);
             </code></pre>
@@ -307,13 +309,13 @@ if($employee->isEligibleForFullBenefits()) { /* ... */ }
 </section>
 <section>
     <h1>Avoid Crutch Comments</h1>
-    <p>Your don’t want “crutch comments” — comments that are trying to make up for the unreadability of the code.</p>
     <blockquote>Good code is better than bad code with good comments</blockquote>
+    <aside class="notes">Your don’t want “crutch comments” — comments that are trying to make up for the unreadability of the code.</aside>
 </section>
 <section>
     <h1>Always remember the purpose</h1>
-    <p>The purpose of a comment is to help the reader know what the writer knew when writing the code. It's about realizing
-        all the not-so-obvious nuggets of information you have about the code and writing those down.</p>
+    <p>The purpose of a comment is to help the reader know what the writer knew when writing the code.</p>
+    <aside class="notes"> It's about realizing all the not-so-obvious nuggets of information you have about the code and writing those down.</aside>
 </section>
 <section>
     <h1>3. Naming Things</h1>
@@ -327,10 +329,10 @@ if($employee->isEligibleForFullBenefits()) { /* ... */ }
     <pre><code data-noescape class="php smaller">
 protected $days; // ellapsed time in days
             </code></pre>
-    <p>The name $days reveals nothing and the comment is a crutch.</p>
+    <aside class="notes">The name $days reveals nothing and the comment is a crutch.</aside>
     <div class="fragment">
-        <p>These are better names:</p>
         <pre><code data-noescape class="php smaller">
+// better            
 protected $elapsedTimeInDays;
 protected $daysSinceCreation;
 protected $daysSinceModification;
@@ -340,7 +342,7 @@ protected $fileAgeInDays;
 </section>
 <section>
     <h1>Think of a name as a tiny comment</h1>
-    <p>Even though there isn’t much room, you can convey a lot of information by choosing a good name.</p>
+    <aside class="notes">Even though there isn’t much room, you can convey a lot of information by choosing a good name.</aside>
 </section>
 <section>
     <h1>Use specific words</h1>
@@ -353,17 +355,16 @@ function fetchUrl($url) { /* ... */ }
 function getUrlFromCache($url) { /* ... */ }
             </code></pre>
 </section>
-<section class="full" data-fullscreen>
+<section>
     <h1>Use specific words</h1>
     <pre><code data-noescape class="php smaller">
 class BinaryTree {
     protected function getSize() { /* ... */ }
 }
             </code></pre>
-    <p>What would you expect the getSize() method to return? The height of the tree, the number of nodes, or the memory footprint
-        of the tree?</p>
+    <aside class="notes">What would you expect the getSize() method to return? The height of the tree, the number of nodes, or the memory footprint
+        of the tree?</aside>
     <div class="fragment">
-        <p>Any of these are better.</p>
         <pre><code data-noescape class="php smaller">
 protected function getHeight()  { /* ... */ }
 protected function getNumNodes()  { /* ... */ }
@@ -374,7 +375,6 @@ protected function geMemoryBytes()  { /* ... */ }
 <section class="full" data-fullscreen>
     <h1>Use pronouncable names</h1>
     <p>Humans are good at words. Take advantage of this by using them.</p>
-    <p>Which of these is easier to read and discuss?</p>
     <div style="display: flex;">
         <div style="flex-basis: 100%">
             <pre><code data-noescape class="php smaller">
@@ -400,11 +400,15 @@ class Customer {
         <blockquote>Sally, take a look at this record! The generation timestamp is set to tomorrow's date. How can that be?</blockquote>
         </p>
     </div>
+    <aside class="notes">Which of these is easier to read and discuss?</aside>
 </section>
 <section>
     <h1>Use nouns and verbs</h1>
-    <h4>Classes and objects should have noun or noun phrase names like Customer, WikiPage, or AddressParser.</h4>
-    <h4 class="fragment">Method names should have verb or verb phrase names like postPayment, deletePage, or save</h4>
+    <p>Classes and objects = nouns (Customer, WikiPage, or AddressParser)</p>
+    <p>Methods = verbs (postPayment, deletePage, or save)</p>
+    <aside class="notes" data-markdown>
+* Classes and objects should have noun or noun phrase names like Customer, WikiPage, or AddressParser.
+* Method names should have verb or verb phrase names like postPayment, deletePage, or save
 </section>
 <section class="full" data-fullscreen>
     <h1>Don't add gratuitous context</h1>
@@ -418,19 +422,24 @@ class Address {
     protected $addressCountry
 }
             </code></pre>
-    <p>Repeating the word "address" here is gratuituous because the class name is already "Address".</p>
+    <aside class="notes">Repeating the word "address" here is gratuituous because the class name is already "Address".</aside>
     <div class="fragment">
         <p>When you have to use this class, it quickly becomes silly.</p>
         <pre><code data-noescape class="php smaller">
 $address = new Address();
 echo $address->addressCity . ' ' . $address->addressState;
 </code></pre>
-        <p>That two-line snippet uses the word "address" six times!</p>
+        <aside class="notes">That two-line snippet uses the word "address" six times!</aside>
     </div>
 </section>
 <section>
     <h2>The best names are ones that can’t be misconstrued</h2>
-    <p>Unfortunately, a lot of English words are ambiguous when it comes to programming, such as read, get, and filter.
-        Before you decide on a name, play devil’s advocate and imagine how your name might be misunderstood. The best names
-        are resistant to misinterpretation.</p>
+    <ul>
+    <li>read</li>
+    <li>get</li>
+    <li>filter</li>
+    </ul>
+    <aside class="notes">Unfortunately, a lot of English words are ambiguous when it comes to programming, such as read, get, and filter. Before
+        you decide on a name, play devil’s advocate and imagine how your name might be misunderstood. The best names are
+        resistant to misinterpretation.</aside>
 </section>

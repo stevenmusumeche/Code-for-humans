@@ -3,27 +3,19 @@
 </section>
 <section>
     <h1>Don't make them think</h1>
-    <h4>Make all your conditionals, loops, and other changes to control flow as “natural” as possible — written in a way that doesn’t make the reader stop and reread your code.</h4>
+    <h4>Don't make the reader stop and re-read your code</h4>
+    <aside class="notes"h4>Make all your conditionals, loops, and other changes to control flow as “natural” as possible — written in a way that doesn’t make the reader stop and reread your code.</aside>
 </section>
 <section>
     <h1>Order of conditions</h1>
-    <p>Which is easier to read?</p>
             <pre><code data-noescape class="php smaller">
 if ($length >= 10)
-
-or
-
+// or
 if (10 <= $length)
 </code></pre>
-</section>
-<section>
-    <h1>Order of conditions</h1>
-    <p>What about these?</p>
-            <pre><code data-noescape class="php smaller">
+            <pre class="fragment"><code data-noescape class="php smaller">
 while ($bytesReceived < $bytesExpected) 
-
-or 
-
+// or 
 while ($bytesExpected > $bytesReceived)
 </code></pre>
 </section>
@@ -74,7 +66,7 @@ public function contains($string, $subString) {
 
 <section>
     <h1>Minimize Nesting</h1>
-    <p>Deeply nested code is hard to understand. Each level of nesting pushes an extra condition onto the reader’s “mental stack.”</p>
+    <p>Deeply nested code is hard to understand.</p>
                         <pre><code data-noescape class="php smaller">
 if ($userResult == SUCCESS) {
     if ($permissionResult != SUCCESS) {
@@ -89,6 +81,7 @@ if ($userResult == SUCCESS) {
 $reply.done();
 </code></pre>
 <p class="fragment">Overall, you have to keep the values of $userResult and $permissionResult in your head at all times.</p>
+<aside class="notes">Each level of nesting pushes an extra condition onto the reader’s “mental stack.”</aside>
 </section>
 
 <section>
@@ -118,20 +111,20 @@ $reply.Done();
 
 <section>
     <h1>Use Explaining Variables</h1>
-    <p>Introduce an extra variable that captures a smaller subexpression.</p>
-    <pre><code data-noescape class="php smaller">
+    <aside class="notes">Introduce an extra variable that captures a smaller subexpression.</aside>
+    <pre><code data-noescape class="php">
 if(trim($line.explode(':'[0])) === 'root') { /*...*/}
 
-vs.
+// or
 
-$userName = trim($line.explode(':'[0]));
-if($userName === 'root') { /*...*/}
+$username = trim($line.explode(':'[0]));
+if($username === 'root') { /*...*/}
 </code></pre>
 </section>
 
 <section data-fullscreen>
     <h1>Use Summary Variables</h1>
-        <pre><code data-noescape class="php smaller">
+        <pre><code data-noescape class="php">
 if($request->user->id === $document->owner_id) {
     // user can edit this document
 }
@@ -139,8 +132,8 @@ if($request->user->id !== $document->owner_id) {
     // document is ready only
 }
 </code></pre>
-<p>The main concept in this code is, “Does the user own the document?” That concept can be stated more clearly by adding a summary variable</p>
-        <pre class="fragment"><code data-noescape class="php smaller">
+<p>The main concept in this code is, “Does the user own the document?”</p>
+        <pre class="fragment"><code data-noescape class="php">
 $userOwnsDocument = ($request->user->id === $document->owner_id);
 if(userOwnsDocument) {
     // user can edit this document
@@ -149,4 +142,5 @@ if(!userOwnsDocument) {
     // document is ready only
 }
 </code></pre>
+<aside class="notes">That concept can be stated more clearly by adding a summary variable</aside>
 </section>

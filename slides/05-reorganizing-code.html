@@ -2,18 +2,17 @@
     <h1>Section 4: Reorganizing Code</h1>
     <blockquote>Functions should do one thing. They should do it well. They should do it only.</blockquote>
 </section>
-<section data-fullscreen>
-    <h1>Agressively Identify and extract unrelated subproblems</h1>
+<section>
+    <h2>Agressively ID &amp; extract unrelated subproblems</h2>
     <ol>
         <li>Look at a given function or block of code, and ask yourself, “What is the high-level goal of this code?”</li>
-        <li>For each line of code, ask, “Is it working directly to that goal? Or is it solving an unrelated subproblem needed
+        <li class="fragment">For each line of code, ask, “Is it working directly to that goal? Or is it solving an unrelated subproblem needed
             to meet it?”</li>
-        <li>If enough lines are solving an unrelated subproblem, extract that code into a separate function.</li>
+        <li class="fragment">If enough lines are solving an unrelated subproblem, extract that code into a separate function.</li>
     </ol>
 </section>
 <section data-fullscreen class="full">
-    <h1>Example</h1>
-    <pre><code data-noescape class="php smaller">
+    <pre><code data-noescape class="php">
 // Return which element of 'array' is closest to the given latitude/longitude.
 var findClosestLocation = function(lat, lng, array) {
     var closest;
@@ -35,35 +34,34 @@ var findClosestLocation = function(lat, lng, array) {
     return closest;
 };
 </code></pre>
-    <div class="fragment">Most of the code inside the loop is working on an unrelated subproblem: Compute the spherical distance between two lat/long
-        points. Let's extract that.</div>
+    <aside class="notes">Most of the code inside the loop is working on an unrelated subproblem: Compute the spherical distance between two lat/long
+        points. Let's extract that.</aside>
 </section>
 
 <section data-fullscreen class="full">
-    <h1>Better</h1>
-    <pre><code data-noescape class="php smaller">
-// Return which element of 'array' is closest to the given latitude/longitude.
-var findClosestLocation = function(lat, lng, array) {
+    <pre><code data-noescape class="php">
+// Return which element of 'locations' is closest to the given latitude/longitude.
+var findClosestLocation = function(lat, long, locations) {
     var closest;
-    var closest_dist = Number.MAX_VALUE;
+    var closestDistance = Number.MAX_VALUE;
     for (var i = 0; i < array.length; i += 1) {
-        var dist = calculateSphericalDistance(lat, lng, array[i].latitude, array[i].longitude);
-        if (dist < closest_dist) {
-            closest = array[i];
-            closest_dist = dist;
+        var dist = calculateSphericalDistance(lat, long, locations[i].latitude, locations[i].longitude);
+        if (dist < closestDistance) {
+            closest = locations[i];
+            closestDistance = dist;
         }
     }
     return closest;
 };
 
-function calculateSphericalDistance(lat1, lng1, lat2, lng2) {
-    var lat_rad = radians(lat1);
-    var lng_rad = radians(lng2);
-    var lat2_rad = radians(lat2);
-    var lng2_rad = radians(lng2);
+function calculateSphericalDistance(lat1, long1, lat2, long2) {
+    var latRadians = radians(lat1);
+    var lngRadians = radians(long2);
+    var lat2Radians = radians(lat2);
+    var lng2Radians = radians(long2);
 
     // Use the "Spherical Law of Cosines" formula. 
-    return Math.acos(Math.sin(lat_rad) * Math.sin(lat2_rad) + Math.cos(lat_rad) * Math.cos(lat2_rad) * Math.cos(lng2_rad - lng_rad));
+    return Math.acos(Math.sin(latRadians) * Math.sin(lat2Radians) + Math.cos(lat2Radians) * Math.cos(lat2Radians) * Math.cos(lng2Radians - lngRadians));
 }
 </code></pre>
 </section>
@@ -81,27 +79,73 @@ function calculateSphericalDistance(lat1, lng1, lat2, lng2) {
     <p>Keep all statements in a function at the same level of abstraction. Readers won't be able to tell if a line is an essential
         concept or a minor detail.</p>
 </section>
+<section class="full" data-fullscreen>
+    <div style="display:flex;">
+        <div style="flex-basis: 100%">
+            <pre><code data-noescape class="php">
+function DailyChores() {
+    Dust();
+    Hoover();
+    MopKitchenFloor();
+    AddDirtyClothesToWashingMachine(); 
+    PlaceDetergentInWashingMachine();
+    CloseWashingMachineDoor();
+    StartWashingMachine();
+    Relax();
+ }
+    </code></pre>
+        </div>
+        <div style="flex-basis: 100%">
+            <pre><code data-noescape class="php fragment">
+function DailyChores() {
+    Dust();
+    Hoover();
+    CleanKitchen();
+    WashDirtyClothes();
+    Relax();
+}
+
+function WashDirtyClothes() {
+    AddDirtyClothesToWashingMachine(); 
+    PlaceDetergentInWashingMachine();
+    CloseWashingMachineDoor();
+    StartWashingMachine();
+}
+
+function CleanKitchen() {
+    MopKitchenFloor();
+    WashPots();
+    DefrostFridge();
+ }
+    </code></pre>
+        </div>
+    </div>
+    
+        
+</section>
 <section>
     <h1>Limit function arguments</h1>
     <p>The ideal number of arguments for a function is zero. Next comes one and two. Three+ arguments should be avoided it at
         all possible.</p>
 </section>
-<section>
+<section data-fullscreen>
     <h1>Don't use "flag" arguments</h1>
-    <pre><code data-noescape class="php smaller">
+    <pre><code data-noescape class="php">
 function renderPage($isTestSuite = false) {
     // render the page, but render it differently if this is run from a test suite
 }
 </code></pre>
-    <p>Passing a boolean into a function loudly proclaims "THIS FUNCTION DOES MORE THAN ONE THING".</p>
-    <p>We should split the function into two: renderForTestSuite() and renderPage()</p>
+    <aside class="notes">
+        <p>Passing a boolean into a function loudly proclaims "THIS FUNCTION DOES MORE THAN ONE THING".</p>
+        <p>We should split the function into two: renderForTestSuite() and renderPage()</p>
+    </aside>
 </section>
 <section>
     <h1>Eliminate side effects</h1>
     <p>Side effects are lies. Your function promises to do one thing, but it also does other hidden things.</p>
 </section>
 <section data-fullscreen class="full">
-    <pre><code data-noescape class="php smaller">
+    <pre><code data-noescape class="php">
 class UserValidator
 {
     public function checkPassword($userName, $password)
@@ -123,35 +167,41 @@ class UserValidator
 </code></pre>
     <div class="fragment">
         <h1>Lies.</h1>
-        <p>The function "secretly" initializes a session.</p>
-        <p>Now we have a temporal coupling problem - we can only call "checkPassword" at certain times or risk wiping the session.</p>
     </div>
+    <aside class="notes" data-markdown>
+* The function "secretly" initializes a session.
+* Now we have a temporal coupling problem - we can only call "checkPassword" at certain times or risk wiping the session.
+    </aside>
 </section>
 <section>
     <h1>Avoid output arguments</h1>
     <p>Arguments are most naturally seen as INPUTS to a function.</p>
-    <pre><code data-noescape class="php smaller">
-// What's this do?
+    <pre><code data-noescape class="php">
 appendFooter($string);
             </code></pre>
-    <ul>
+    <ul class="fragment">
         <li>Append $string as the footer to something?</li>
         <li>Append some footer to $string?</li>
         <li>Is $string an input or an output?</li>
     </ul>
+    <aside class="notes">
+What's this function do?
+    </aside>
 </section>
 <section>
     <h2>Command/Query Separation</h2>
     <p>Functions should either do something or answer something, but not both.</p>
-    <pre><code data-noescape class="php smaller">// returns boolean
+    <pre><code data-noescape class="php">// returns boolean
 public function set($attribute, $value) { /* ... */}
 
 // call it like this
 if(set('username', 'steven')) {
     // ...
 } </code></pre>
-    <p>What does it mean? Is it asking if username was previously set to "steven"? Or is it asking whether the username attribute
-        was successfully set to "steven"?</p>
+    <p>What does it mean?</p>
+    <aside class="notes">
+Is it asking if username was previously set to "steven"? Or is it asking whether the username attribute was successfully set to "steven"?
+    </aside>
 </section>
 <section>
     <h1>Extract try/catch blocks</h1>
